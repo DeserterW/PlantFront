@@ -80,6 +80,7 @@ export default {
                 if(response.data.data == "success")
                 {
                     alert("登录成功")
+                    router.push("Dashboard")
                 }else
                 {
                     alert("登录失败")
@@ -87,7 +88,6 @@ export default {
             }).catch(e => {
                 console.log('Submit Fail')
             });
-            router.push("dashboard")
 
         };
 
