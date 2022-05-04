@@ -1,7 +1,7 @@
 <template>
     <div class="login-wrap">
         <div class="ms-login">
-            <div class="ms-title">后台管理系统</div>
+            <div class="ms-title">植物培育信息管理系统</div>
             <el-form :model="param" :rules="rules" ref="login" label-width="0px" class="ms-content">
                 <el-form-item prop="username">
                     <el-input v-model="param.username" placeholder="username">
@@ -18,10 +18,15 @@
                         </template>
                     </el-input>
                 </el-form-item>
+                <el-form-item>
+                      <el-radio v-model="param.character" label="1">用户</el-radio>
+                      <el-radio v-model="param.character" label="2" >管理员</el-radio>
+                </el-form-item>
+    
                 <div class="login-btn">
                     <el-button type="primary" @click="submitForm()">登录</el-button>
                 </div>
-                <p class="login-tips">Tips : 用户名和密码随便填。</p>
+                <p class="login-tips">Tips : 请正确填写账号密码。</p>
             </el-form>
         </div>
     </div>
@@ -32,13 +37,14 @@ import { ref, reactive } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
+import axios from 'axios';
 
 export default {
     setup() {
         const router = useRouter();
         const param = reactive({
-            username: "admin",
-            password: "123123",
+            username: "123",
+            password: "123",
         });
 
         const rules = {
@@ -55,17 +61,36 @@ export default {
         };
         const login = ref(null);
         const submitForm = () => {
-            login.value.validate((valid) => {
-                if (valid) {
-                    ElMessage.success("登录成功");
-                    localStorage.setItem("ms_username", param.username);
-                    router.push("/");
-                } else {
-                    ElMessage.error("登录成功");
-                    return false;
+
+            if(param.character == null)
+            {
+                alert("must identify your character")
+                return
+            }
+            const formData = {
+                name:param.username,
+                password:param.password,
+                character:param.character
+            }
+
+            // Submit the form data 
+            axios.post('http://localhost:8080/login/check', 
+            formData
+            ).then(response => {
+                if(response.data.data == "success")
+                {
+                    alert("登录成功")
+                }else
+                {
+                    alert("登录失败")
                 }
+            }).catch(e => {
+                console.log('Submit Fail')
             });
+            router.push("dashboard")
+
         };
+
 
         const store = useStore();
         store.commit("clearTags");
