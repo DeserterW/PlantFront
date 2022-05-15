@@ -6,6 +6,9 @@ import axios from 'axios'
 import qs from 'qs'
 import installElementPlus from './plugins/element'
 import './assets/css/icon.css'
+import _ from 'lodash'
+import { reactive } from 'vue'
+import dayjs from 'dayjs'
 
 const app = createApp(App)
 installElementPlus(app)

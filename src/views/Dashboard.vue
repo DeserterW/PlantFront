@@ -22,13 +22,13 @@
                 <el-card shadow="hover" style="height:252px;">
                     <template #header>
                         <div class="clearfix">
-                            <span>语言详情</span>
+                            <span>个人植物库详情</span>
                         </div>
                     </template>
-                    Vue
-                    <el-progress :percentage="71.3" color="#42b983"></el-progress>JavaScript
-                    <el-progress :percentage="24.1" color="#f1e05a"></el-progress>CSS
-                    <el-progress :percentage="13.7"></el-progress>HTML
+                    多肉
+                    <el-progress :percentage="71.3" color="#42b983"></el-progress>吊兰
+                    <el-progress :percentage="24.1" color="#f1e05a"></el-progress>绿萝
+                    <el-progress :percentage="13.7"></el-progress>芦荟
                     <el-progress :percentage="5.9" color="#f56c6c"></el-progress>
                 </el-card>
             </el-col>
@@ -102,12 +102,12 @@
         <el-row :gutter="20">
             <el-col :span="12">
                 <el-card shadow="hover">
-                    <schart ref="bar" class="schart" canvasId="bar" :options="options"></schart>
+                    <schart ref="bar" class="schart" canvasId="bar" :options="humidity"></schart>
                 </el-card>
             </el-col>
             <el-col :span="12">
                 <el-card shadow="hover">
-                    <schart ref="line" class="schart" canvasId="line" :options="options2"></schart>
+                    <schart ref="line" class="schart" canvasId="line" :options="temperature"></schart>
                 </el-card>
             </el-col>
         </el-row>
@@ -117,10 +117,94 @@
 <script>
 import Schart from "vue-schart";
 import { reactive } from "vue";
+import axios from 'axios';
 export default {
     name: "dashboard",
     components: { Schart },
     setup() {
+
+        const info = localStorage.getItem("ms_userInfo")
+        const json_info= JSON.parse(info)
+        const formData = {
+            user_id:json_info["id"]
+        }
+
+        var temperature,humidity;
+        temperature = reactive({
+            type: "line",
+            title: {
+                text: "最近一段时间温度变化",
+            },
+            labels:[],
+            datasets:[]
+        })
+        humidity = reactive({
+            type: "bar",
+            title: {
+                text: "最近一段时间湿度变化",
+            },
+            labels:[],
+            datasets:[]
+        })
+        axios.post("http://localhost:8080/monitor/temperature",
+        formData).then(response =>{
+            if(response.data.success == true)
+            {
+                var jsonarr = response.data.data
+                var s_date = new Set()
+                var s_envId = new Set()
+                // console.log(jsonarr)
+
+                for(var i = 0 ; i<jsonarr.length ; i++)
+                {
+                    var envId = jsonarr[i]["envId"]
+                    s_envId.add(envId)
+                }
+
+                for(var i = 0 ; i<jsonarr.length ; i++)
+                {
+                    var record_time = jsonarr[i]["recordTime"]
+                    if(!s_date.has(record_time))
+                    {
+                        var time_X = dayjs(record_time).format("HH:mm")
+                        temperature.labels.push(time_X)
+                        humidity.labels.push(time_X)
+                        // console.log(temperature)
+                        s_date.add(record_time)
+                    }
+                }
+
+                var temp_jsondatasets = []
+                var hum_jsondatasets = []
+                s_envId.forEach(function(value,key,set){
+                    var temp_json ={
+                        label:value.toString(),
+                        data:[]
+                    }
+                    var hum_json ={
+                        label:value.toString(),
+                        data:[]
+                    }
+                    for(var j = 0 ;j < jsonarr.length ; j++)
+                    {
+                        var temperature = jsonarr[j]["temperature"]
+                        var humidity = jsonarr[j]["humidity"]
+                        var env_id = jsonarr[j]["envId"]
+                        if(env_id == value)
+                        {
+                            temp_json.data.push(temperature)
+                            hum_json.data.push(humidity)
+                        }
+                    }
+                    temp_jsondatasets.push(temp_json)
+                    hum_jsondatasets.push(hum_json)
+                })
+                
+                temperature.datasets = temp_jsondatasets
+                humidity.datasets = hum_jsondatasets
+            }
+        })
+
         const name = localStorage.getItem("ms_username");
         const role = name === "admin" ? "超级管理员" : "普通用户";
 
@@ -157,21 +241,21 @@ export default {
         const options = {
             type: "bar",
             title: {
-                text: "最近一周各品类销售图",
+                text: "最近一段时间湿度变化",
             },
             xRorate: 25,
             labels: ["周一", "周二", "周三", "周四", "周五"],
             datasets: [
                 {
-                    label: "家电",
+                    label: "123",
                     data: [234, 278, 270, 190, 230],
                 },
                 {
-                    label: "百货",
+                    label: "124",
                     data: [164, 178, 190, 135, 160],
                 },
                 {
-                    label: "食品",
+                    label: "125",
                     data: [144, 198, 150, 235, 120],
                 },
             ],
@@ -179,47 +263,47 @@ export default {
         const options2 = {
             type: "line",
             title: {
-                text: "最近几个月各品类销售趋势图",
+                text: "最近一段时间温度变化",
             },
             labels: ["6月", "7月", "8月", "9月", "10月"],
             datasets: [
                 {
-                    label: "家电",
+                    label: "123",
                     data: [234, 278, 270, 190, 230],
                 },
                 {
-                    label: "百货",
+                    label: "124",
                     data: [164, 178, 150, 135, 160],
                 },
                 {
-                    label: "食品",
+                    label: "125",
                     data: [74, 118, 200, 235, 90],
                 },
             ],
         };
         const todoList = reactive([
             {
-                title: "今天要修复100个bug",
+                title: "给吊兰浇200ml水",
                 status: false,
             },
             {
-                title: "今天要修复100个bug",
+                title: "给吊兰浇200ml水",
                 status: false,
             },
             {
-                title: "今天要写100行代码加几个bug吧",
+                title: "给吊兰浇200ml水",
                 status: false,
             },
             {
-                title: "今天要修复100个bug",
+                title: "给吊兰浇200ml水",
                 status: false,
             },
             {
-                title: "今天要修复100个bug",
+                title: "给吊兰浇200ml水",
                 status: true,
             },
             {
-                title: "今天要写100行代码加几个bug吧",
+                title: "给吊兰浇200ml水",
                 status: true,
             },
         ]);
@@ -230,6 +314,8 @@ export default {
             options,
             options2,
             todoList,
+            temperature,
+            humidity,
             role,
         };
     },

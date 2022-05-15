@@ -28,7 +28,18 @@
                         </div>
                     </template>
                     <el-form label-width="90px">
-                        <el-form-item label="用户名："> {{ name }} </el-form-item>
+                        <el-form-item label="用户名：">{{name}}
+                            <el-input type="text" v-model="form.name" :disabled="isDdisabled" placeholder="名字"></el-input> 
+                        </el-form-item>
+                        <el-form-item label="邮箱:">{{email}}
+                            <el-input v-bind:disabled="form.change" type="text" v-model="form.email" placeholder="邮箱"> ></el-input>
+                        </el-form-item>
+                        <el-form-item label="性别:">{{gender}}
+                            <el-input v-bind:disabled="form.change" type="text" v-model="form.gender" placeholder="性别">></el-input>
+                        </el-form-item>
+                        <el-form-item label="从业年龄">{{employYear}}年
+                            <el-input v-bind:disabled="form.change" type="text" v-model="form.employYear" placeholder="从业年龄"></el-input>
+                        </el-form-item>
                         <el-form-item label="旧密码：">
                             <el-input type="password" v-model="form.old"></el-input>
                         </el-form-item>
@@ -39,6 +50,7 @@
                             <el-input v-model="form.desc"></el-input>
                         </el-form-item>
                         <el-form-item>
+                            <el-button type="primary" @click="onChange">修改</el-button>
                             <el-button type="primary" @click="onSubmit">保存</el-button>
                         </el-form-item>
                     </el-form>
@@ -71,14 +83,27 @@ export default {
     components: {
         VueCropper,
     },
+
     setup() {
         const name = localStorage.getItem("ms_username");
+        const info = localStorage.getItem("ms_userInfo")
+        const json_info= JSON.parse(info)
+        
+        console.log(json_info)
+
+        const email = json_info["email"]
+        const gender = json_info["gender"] == 1 ? "男":"女"
+        const employYear = json_info["employYears"]
         const form = reactive({
             old: "",
             new: "",
-            desc: "不可能！我的代码怎么可能会有bug！",
+            desc: "十年经验，植物专家",
         });
         const onSubmit = () => {};
+        
+        const onChange = () => {
+            console.log("yes")
+        };
 
         const avatarImg = ref(avatar);
         const imgSrc = ref("");
@@ -116,6 +141,9 @@ export default {
 
         return {
             name,
+            gender,
+            email,
+            employYear,
             form,
             onSubmit,
             cropper,

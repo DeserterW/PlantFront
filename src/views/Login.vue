@@ -18,8 +18,8 @@
                         </template>
                     </el-input>
                 </el-form-item>
-                <el-form-item>
-                      <el-radio v-model="param.character" label="1">用户</el-radio>
+                <el-form-item >
+                      <el-radio v-model="param.character" label="1" >用户</el-radio>
                       <el-radio v-model="param.character" label="2" >管理员</el-radio>
                 </el-form-item>
     
@@ -46,7 +46,6 @@ export default {
             username: "123",
             password: "123",
         });
-
         const rules = {
             username: [
                 {
@@ -64,7 +63,7 @@ export default {
 
             if(param.character == null)
             {
-                alert("must identify your character")
+                ElMessage.error("请选择一个角色")
                 return
             }
             const formData = {
@@ -77,13 +76,16 @@ export default {
             axios.post('http://localhost:8080/login/check', 
             formData
             ).then(response => {
-                if(response.data.data == "success")
+                if(response.data.success == true)
                 {
-                    alert("登录成功")
-                    router.push("Dashboard")
+                    ElMessage.success("登录成功")
+                    localStorage.setItem("ms_username", param.username);
+                    console.log(response.data.data)
+                    localStorage.setItem("ms_userInfo",JSON.stringify(response.data.data))
+                    router.push("/")
                 }else
                 {
-                    alert("登录失败")
+                    ElMessage.error("登录失败")
                 }
             }).catch(e => {
                 console.log('Submit Fail')
