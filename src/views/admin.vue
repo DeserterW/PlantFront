@@ -99,18 +99,7 @@
                 </el-card>
             </el-col>
         </el-row>
-        <el-row :gutter="20">
-            <el-col :span="12">
-                <el-card shadow="hover">
-                    <schart ref="bar" class="schart" canvasId="bar" :options="humidity"></schart>
-                </el-card>
-            </el-col>
-            <el-col :span="12">
-                <el-card shadow="hover">
-                    <schart ref="line" class="schart" canvasId="line" :options="temperature"></schart>
-                </el-card>
-            </el-col>
-        </el-row>
+
     </div>
 </template>
 
@@ -129,84 +118,11 @@ export default {
             user_id:json_info["id"]
         }
 
-        var temperature,humidity;
-        temperature = reactive({
-            type: "line",
-            title: {
-                text: "最近一段时间温度变化",
-            },
-            labels:[],
-            datasets:[]
-        })
-        humidity = reactive({
-            type: "bar",
-            title: {
-                text: "最近一段时间湿度变化",
-            },
-            labels:[],
-            datasets:[]
-        })
-        axios.post("http://localhost:8080/monitor/temperature",
-        formData).then(response =>{
-            if(response.data.success == true)
-            {
-                var jsonarr = response.data.data
-                var s_date = new Set()
-                var s_envId = new Set()
-                // console.log(jsonarr)
-
-                for(var i = 0 ; i<jsonarr.length ; i++)
-                {
-                    var envId = jsonarr[i]["envId"]
-                    s_envId.add(envId)
-                }
-
-                for(var i = 0 ; i<jsonarr.length ; i++)
-                {
-                    var record_time = jsonarr[i]["recordTime"]
-                    if(!s_date.has(record_time))
-                    {
-                        var time_X = dayjs(record_time).format("HH:mm")
-                        temperature.labels.push(time_X)
-                        humidity.labels.push(time_X)
-                        // console.log(temperature)
-                        s_date.add(record_time)
-                    }
-                }
-
-                var temp_jsondatasets = []
-                var hum_jsondatasets = []
-                s_envId.forEach(function(value,key,set){
-                    var temp_json ={
-                        label:value.toString(),
-                        data:[]
-                    }
-                    var hum_json ={
-                        label:value.toString(),
-                        data:[]
-                    }
-                    for(var j = 0 ;j < jsonarr.length ; j++)
-                    {
-                        var temperature = jsonarr[j]["temperature"]
-                        var humidity = jsonarr[j]["humidity"]
-                        var env_id = jsonarr[j]["envId"]
-                        if(env_id == value)
-                        {
-                            temp_json.data.push(temperature)
-                            hum_json.data.push(humidity)
-                        }
-                    }
-                    temp_jsondatasets.push(temp_json)
-                    hum_jsondatasets.push(hum_json)
-                })
-                
-                temperature.datasets = temp_jsondatasets
-                humidity.datasets = hum_jsondatasets
-            }
-        })
+       
 
         const name = json_info["name"];
         const role = json_info["identity"] === "admin" ? "超级管理员" : "普通用户";
+
         const data = reactive([
             {
                 name: "2018/09/04",
@@ -237,66 +153,9 @@ export default {
                 value: 1065,
             },
         ]);
-        const options = {
-            type: "bar",
-            title: {
-                text: "最近一段时间湿度变化",
-            },
-            xRorate: 25,
-            labels: ["周一", "周二", "周三", "周四", "周五"],
-            datasets: [
-                {
-                    label: "123",
-                    data: [234, 278, 270, 190, 230],
-                },
-                {
-                    label: "124",
-                    data: [164, 178, 190, 135, 160],
-                },
-                {
-                    label: "125",
-                    data: [144, 198, 150, 235, 120],
-                },
-            ],
-        };
-        const options2 = {
-            type: "line",
-            title: {
-                text: "最近一段时间温度变化",
-            },
-            labels: ["6月", "7月", "8月", "9月", "10月"],
-            datasets: [
-                {
-                    label: "123",
-                    data: [234, 278, 270, 190, 230],
-                },
-                {
-                    label: "124",
-                    data: [164, 178, 150, 135, 160],
-                },
-                {
-                    label: "125",
-                    data: [74, 118, 200, 235, 90],
-                },
-            ],
-        };
+
         const todoList = reactive([
-            // {
-            //     title: "给吊兰浇200ml水",
-            //     status: false,
-            // },
-            // {
-            //     title: "给吊兰浇200ml水",
-            //     status: false,
-            // },
-            // {
-            //     title: "给吊兰浇200ml水",
-            //     status: false,
-            // },
-            // {
-            //     title: "给吊兰浇200ml水",
-            //     status: false,
-            // },
+
             {
                 title: "给绿萝施肥",
                 status: true,
@@ -310,11 +169,9 @@ export default {
         return {
             name,
             data,
-            options,
-            options2,
+
             todoList,
-            temperature,
-            humidity,
+
             role,
         };
     },

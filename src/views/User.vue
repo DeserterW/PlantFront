@@ -29,16 +29,18 @@
                     </template>
                     <el-form label-width="90px">
                         <el-form-item label="用户名：">{{name}}
-                            <el-input type="text" v-model="form.name" :disabled="isDdisabled" placeholder="名字"></el-input> 
+                            <el-input type="text" v-model="form.name" v-bind:disabled="form.change" placeholder="名字"></el-input> 
                         </el-form-item>
                         <el-form-item label="邮箱:">{{email}}
-                            <el-input v-bind:disabled="form.change" type="text" v-model="form.email" placeholder="邮箱"> ></el-input>
+                            <el-input type="text" v-model="form.email" v-bind:disabled="form.change" placeholder="邮箱"> ></el-input>
                         </el-form-item>
                         <el-form-item label="性别:">{{gender}}
-                            <el-input v-bind:disabled="form.change" type="text" v-model="form.gender" placeholder="性别">></el-input>
+                            <el-radio v-model="form.gender" label="1" v-bind:disabled="form.change">男</el-radio>
+                            <el-radio v-model="form.gender" label="0" v-bind:disabled="form.change">女</el-radio>
+                            <!-- <el-input type="radio" v-model="form.gender" v-bind:disabled="form.change" placeholder="性别">></el-input> -->
                         </el-form-item>
                         <el-form-item label="从业年龄">{{employYear}}年
-                            <el-input v-bind:disabled="form.change" type="text" v-model="form.employYear" placeholder="从业年龄"></el-input>
+                            <el-input type="text" v-model="form.employYear" v-bind:disabled="form.change" placeholder="从业年龄"></el-input>
                         </el-form-item>
                         <el-form-item label="旧密码：">
                             <el-input type="password" v-model="form.old"></el-input>
@@ -78,6 +80,7 @@ import { reactive, ref } from "vue";
 import VueCropper from "vue-cropperjs";
 import "cropperjs/dist/cropper.css";
 import avatar from "../assets/img/img.jpg";
+import axios from 'axios';
 export default {
     name: "user",
     components: {
@@ -88,21 +91,57 @@ export default {
         const name = localStorage.getItem("ms_username");
         const info = localStorage.getItem("ms_userInfo")
         const json_info= JSON.parse(info)
-        
-        console.log(json_info)
 
+        console.log(json_info)
         const email = json_info["email"]
         const gender = json_info["gender"] == 1 ? "男":"女"
         const employYear = json_info["employYears"]
-        const form = reactive({
+        var form = reactive({
             old: "",
             new: "",
             desc: "十年经验，植物专家",
+            change: true,
+            name: "",
+            email: "",
+            gender: json_info["gender"],
+            employYear: "",
         });
-        const onSubmit = () => {};
+        const onSubmit = () => {
+            const submit_form = ref(form)
+            const name = submit_form.value.name
+            const gender = submit_form.value.gender
+            const email = submit_form.value.email
+            const employYear = submit_form.value.employYear
+
+            if(name == null && gender == null && email == null && employYear == null)
+            {
+                return;
+            }
+
+            const formData = {
+                id: json_info["id"],
+                email: email == "" ? null : email,
+                gender: parseInt(gender),
+                name: name == "" ? null : name,
+                employYear: parseInt(employYear)
+            }
+            console.log(formData)
+            axios.post("http://localhost:8080/user/info_change",
+            formData
+            ).then(response =>{
+                if(response.data.success == true)
+                {
+                    Elmessage.success("已发送修改信息")
+                }else
+                {
+                    Elmessage.success("发送失败")
+                }
+                form.change = true;
+            })
+        };
         
         const onChange = () => {
-            console.log("yes")
+            form.change = false;
         };
 
         const avatarImg = ref(avatar);
@@ -146,6 +185,7 @@ export default {
             employYear,
             form,
             onSubmit,
+            onChange,
             cropper,
             avatarImg,
             imgSrc,

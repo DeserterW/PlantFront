@@ -67,7 +67,7 @@ export default {
                 return
             }
             const formData = {
-                name:param.username,
+                username:param.username,
                 password:param.password,
                 character:param.character
             }
@@ -80,6 +80,7 @@ export default {
                 {
                     ElMessage.success("登录成功")
                     localStorage.setItem("ms_username", param.username);
+
                     console.log(response.data.data)
                     localStorage.setItem("ms_userInfo",JSON.stringify(response.data.data))
                     router.push("/")

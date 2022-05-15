@@ -1,3 +1,4 @@
+import { TimePickPanel } from "element-plus/lib/el-time-picker";
 import {createRouter, createWebHashHistory} from "vue-router";
 import Home from "../views/Home.vue";
 
@@ -21,7 +22,7 @@ const routes = [
                 path: "/table",
                 name: "basetable",
                 meta: {
-                    title: '表格'
+                    title: '个人信息库'
                 },
                 component: () => import ( /* webpackChunkName: "table" */ "../views/BaseTable.vue")
             }, {
@@ -109,6 +110,58 @@ const routes = [
                     title: '富文本编辑器'
                 },
                 component: () => import (/* webpackChunkName: "editor" */ '../views/Editor.vue')
+            },{
+                path:'/personalscheme',
+                name:'personalscheme',
+                meta:{
+                    title:'个人培养方案'
+                },
+                component: () => import('../views/PersonalScheme.vue')
+            },{
+                path:'/forum',
+                name:'forum',
+                meta:{
+                    title:'论坛'
+                },
+                component: () => import('../views/Forum.vue')
+            },{
+                path:'/imageidenti',
+                name:'imageidenti',
+                meta:{
+                    title:'图像识别'
+                },
+                component: () => import('../views/imageidenti.vue')
+            },{
+                path:'/admin',
+                name:'admin',
+                meta:{
+                    title:'管理员界面'
+                },
+                component:() => import('../views/admin.vue')
+            },
+            {
+                path:'/updatescheme',
+                name:'updatascheme',
+                meta:{
+                    title:'培养方案管理界面'
+                },
+                component:() => import('../views/UpdateScheme.vue')
+            },
+            {
+                path:'/updateplant',
+                name:'updateplant',
+                meta:{
+                    title:'植物库管理界面'
+                },
+                component:() => import('../views/UpdatePlant.vue')
+            },
+            {
+                path:'commentcheck',
+                name:'commentcheck',
+                meta:{
+                    title:'评论管理界面'
+                },
+                component:() => import('../views/CommentCheck.vue')
             }
         ]
     }, {
@@ -129,6 +182,17 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     document.title = `${to.meta.title} | vue-manage-system`;
     const role = localStorage.getItem('ms_username');
+    const userInfo = JSON.parse(localStorage.getItem('ms_userInfo'));
+    const character = userInfo["identity"];
+    console.log(character)
+
+    if(to.path == '/updateplant' || to.path == '/updatescheme' || to.path == '/commentcheck')
+    {
+        character == 'admin' 
+            ? next() 
+            : next('/403')
+    }
+    
     if (!role && to.path !== '/login') {
         next('/login');
     } else if (to.meta.permission) {
