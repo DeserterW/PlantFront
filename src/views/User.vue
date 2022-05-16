@@ -81,6 +81,7 @@ import VueCropper from "vue-cropperjs";
 import "cropperjs/dist/cropper.css";
 import avatar from "../assets/img/img.jpg";
 import axios from 'axios';
+import { ElMessage } from 'element-plus';
 export default {
     name: "user",
     components: {
@@ -131,10 +132,10 @@ export default {
             ).then(response =>{
                 if(response.data.success == true)
                 {
-                    Elmessage.success("已发送修改信息")
+                    ElMessage.success("已发送修改信息")
                 }else
                 {
-                    Elmessage.success("发送失败")
+                    ElMessage.success("发送失败")
                 }
                 form.change = true;
             })

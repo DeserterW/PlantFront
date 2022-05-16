@@ -62,6 +62,11 @@ export default {
                 title: "图像识别",                
             },
             {
+                icon:"el-icon-lx-warn",
+                index: "/alertmod",
+                title: "告警"
+            },
+            {
                 icon: "el-icon-lx-redpacket_fill",
                 index: "/admin",
                 title: "管理员",     
@@ -110,11 +115,11 @@ export default {
             //         },
             //     ],
             // },
-            // {
-            //     icon: "el-icon-lx-emoji",
-            //     index: "/icon",
-            //     title: "自定义图标",
-            // },
+            {
+                icon: "el-icon-lx-emoji",
+                index: "/icon",
+                title: "自定义图标",
+            },
             // {
             //     icon: "el-icon-pie-chart",
             //     index: "/charts",

@@ -232,7 +232,7 @@ export default {
 }
 
 .returnRes{
-     label-position:top;
+     /* label-position:top; */
 }
 
 </style>

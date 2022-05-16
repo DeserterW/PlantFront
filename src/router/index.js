@@ -162,6 +162,14 @@ const routes = [
                     title:'评论管理界面'
                 },
                 component:() => import('../views/CommentCheck.vue')
+            },
+            {
+                path:'alertmod',
+                name:'alertmod',
+                meta:{
+                    title:'告警界面'
+                },
+                component:() => import('../views/AlertMod.vue')
             }
         ]
     }, {
@@ -183,19 +191,17 @@ router.beforeEach((to, from, next) => {
     document.title = `${to.meta.title} | vue-manage-system`;
     const role = localStorage.getItem('ms_username');
     const userInfo = JSON.parse(localStorage.getItem('ms_userInfo'));
-    const character = userInfo["identity"];
-    console.log(character)
+    // const character = userInfo["identity"];
+    // console.log(character)
 
-    if(to.path == '/updateplant' || to.path == '/updatescheme' || to.path == '/commentcheck')
+    if (!role && to.path !== '/login') {
+        next('/login');
+    }else if(to.path == '/updateplant' || to.path == '/updatescheme' || to.path == '/commentcheck')
     {
         character == 'admin' 
             ? next() 
             : next('/403')
-    }
-    
-    if (!role && to.path !== '/login') {
-        next('/login');
-    } else if (to.meta.permission) {
+    }else if (to.meta.permission) {
         // 如果是管理员权限则可进入，这里只是简单的模拟管理员权限而已
         role === 'admin'
             ? next()
